@@ -8,7 +8,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import run.yang.lib.heterogeneousjsonlist.JsonSyntaxWithPathException;
-import run.yang.lib.heterogeneousjsonlist.TypeAware;
 import run.yang.lib.heterogeneousjsonlist.log.Logger;
 
 import java.io.IOException;
@@ -20,12 +19,13 @@ import java.util.Map;
  * 作者: Yang Tianmei <br>
  * 描述:
  */
-public abstract class BaseGenericTypeAdapter<BaseTypeT extends TypeAware>
+public abstract class BaseGenericTypeAdapter<BaseTypeT>
         extends TypeAdapter<BaseTypeT> {
 
     private final String mTypeFieldName;
     private final TypeAdapter<JsonObject> mJsonObjectTypeAdapter;
-    private final Map<String, TypeReadWriteAdapter<BaseTypeT>> mAdapterMap = new HashMap<>();
+    private final Map<String, TypeReadWriteAdapter<BaseTypeT>> mTypeNameToAdapterMap = new HashMap<>();
+    private final Map<String, TypeReadWriteAdapter<BaseTypeT>> mClassToAdapterMap = new HashMap<>();
     private final Logger mLogger;
 
     public BaseGenericTypeAdapter(@NonNull Gson gson, @NonNull String typeFieldName, @Nullable Logger logger) {
@@ -36,8 +36,10 @@ public abstract class BaseGenericTypeAdapter<BaseTypeT extends TypeAware>
 
     protected <ImplTypeT extends BaseTypeT> void addSubTypeAdapter(TypeAdapterFactory factory,
                                                                    Gson gson, String typeName, Class<ImplTypeT> subTypeClass) {
-        mAdapterMap.put(typeName, new SubTypeReadWriteAdapter<BaseTypeT, ImplTypeT>(
-                gson.getDelegateAdapter(factory, TypeToken.get(subTypeClass))));
+        SubTypeReadWriteAdapter<BaseTypeT, ImplTypeT> readWriteAdapter = new SubTypeReadWriteAdapter<>(
+                gson.getDelegateAdapter(factory, TypeToken.get(subTypeClass)));
+        mTypeNameToAdapterMap.put(typeName, readWriteAdapter);
+        mClassToAdapterMap.put(subTypeClass.getName(), readWriteAdapter);
     }
 
     @Override
@@ -46,7 +48,7 @@ public abstract class BaseGenericTypeAdapter<BaseTypeT extends TypeAware>
             out.nullValue();
             return;
         }
-        getReadWriteAdapter(value.getType(), null).write(out, value);
+        getReadWriteAdapterByClassName(value.getClass().getName()).write(out, value);
     }
 
     @Override
@@ -71,7 +73,7 @@ public abstract class BaseGenericTypeAdapter<BaseTypeT extends TypeAware>
             return null;
         } else if (jsonElement.isJsonPrimitive()) {
             String typeName = jsonElement.getAsString();
-            return getReadWriteAdapter(typeName, in).fromJsonTree(jsonObject, in);
+            return getReadWriteAdapterByTypeName(typeName, in).fromJsonTree(jsonObject, in);
         } else if (jsonElement.isJsonNull()) {
             return null;
         } else {
@@ -84,9 +86,9 @@ public abstract class BaseGenericTypeAdapter<BaseTypeT extends TypeAware>
     }
 
     @NonNull
-    private TypeReadWriteAdapter<BaseTypeT> getReadWriteAdapter(String typeName,
-                                                                JsonReader jsonReader) {
-        TypeReadWriteAdapter<BaseTypeT> taskAdapter = mAdapterMap.get(typeName);
+    private TypeReadWriteAdapter<BaseTypeT> getReadWriteAdapterByTypeName(String typeName,
+                                                                          JsonReader jsonReader) {
+        TypeReadWriteAdapter<BaseTypeT> taskAdapter = mTypeNameToAdapterMap.get(typeName);
         if (taskAdapter == null) {
             final String msg = "unknown " + mTypeFieldName + " type = " + typeName;
             if (jsonReader == null) {
@@ -94,6 +96,15 @@ public abstract class BaseGenericTypeAdapter<BaseTypeT extends TypeAware>
             } else {
                 throw new JsonSyntaxWithPathException(msg, jsonReader.getPath());
             }
+        }
+        return taskAdapter;
+    }
+
+    @NonNull
+    private TypeReadWriteAdapter<BaseTypeT> getReadWriteAdapterByClassName(String className) {
+        TypeReadWriteAdapter<BaseTypeT> taskAdapter = mClassToAdapterMap.get(className);
+        if (taskAdapter == null) {
+            throw new JsonParseException("unknown subtype = " + className);
         }
         return taskAdapter;
     }
