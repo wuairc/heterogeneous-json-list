@@ -1,0 +1,37 @@
+{
+  "cards": [
+    {
+      "card_type": "text_input",
+      "card_id": "name",
+      "title": "Name",
+      "required": true,
+      "edittext": {
+        "input_type": "text",
+        "hint": "your name",
+        "minLines": 1,
+        "maxLines": 1,
+        "maxCharsCount": 50
+      }
+    },
+    {
+      "card_type": "get_location",
+      "card_id": "house_location",
+      "title": "House Location",
+      "required": true
+    },
+    {
+      "card_type": "take_pictures",
+      "card_id": "house_pics",
+      "title": "House Pictures",
+      "required": true,
+      "max_pic_count": 10
+    },
+    {
+      "card_type": "take_pictures",
+      "card_id": "gate_pics",
+      "title": "House GatePictures",
+      "required": true,
+      "max_pic_count": 5
+    }
+  ]
+}
