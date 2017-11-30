@@ -24,6 +24,7 @@ public class CardTypeAdapterFactory extends BaseTypeAdapterFactory<Card> {
 
     @Override
     public TypeAdapter<Card> createTypeAdapter(final Gson gson, @Nullable Logger logger) {
+        // using anonymous class is not recommend, as it confuse crash stacktrace.
         return new CardTypeAdapter(gson, logger, this);
     }
 

@@ -67,45 +67,49 @@ public abstract class BaseGenericTypeAdapter<BaseTypeT>
         final JsonElement jsonElement = jsonObject.get(mTypeFieldName);
 
         if (jsonElement == null) {
-            if (mLogger != null) {
-                mLogger.log(Logger.WARNING, "type field: " + mTypeFieldName + " not found, skip");
-            }
+            log(Logger.ERROR, "type field " + mTypeFieldName + " not found, skip, path: " + in.getPath());
             return null;
         } else if (jsonElement.isJsonPrimitive()) {
+            // compatible with string, number type
             String typeName = jsonElement.getAsString();
-            return getReadWriteAdapterByTypeName(typeName, in).fromJsonTree(jsonObject, in);
+            TypeReadWriteAdapter<BaseTypeT> readWriteAdapter = getReadWriteAdapterByTypeName(typeName);
+            if (readWriteAdapter == null) {
+                // skip new types
+                log(Logger.ERROR, "unknown subtype " + mTypeFieldName + " = " + typeName + ", skip, path: " + in.getPath());
+                return null;
+            }
+            return readWriteAdapter.fromJsonTree(jsonObject, in);
         } else if (jsonElement.isJsonNull()) {
+            log(Logger.ERROR, mTypeFieldName + " is null, skip, path: " + in.getPath());
             return null;
         } else {
             String msg = mTypeFieldName
-                    + " expected to be a string, but "
+                    + " expected to be string or number, but "
                     + jsonElement.getClass().getSimpleName()
                     + " found";
             throw new JsonSyntaxWithPathException(msg, in.getPath());
         }
     }
 
-    @NonNull
-    private TypeReadWriteAdapter<BaseTypeT> getReadWriteAdapterByTypeName(String typeName,
-                                                                          JsonReader jsonReader) {
-        TypeReadWriteAdapter<BaseTypeT> taskAdapter = mTypeNameToAdapterMap.get(typeName);
-        if (taskAdapter == null) {
-            final String msg = "unknown " + mTypeFieldName + " type = " + typeName;
-            if (jsonReader == null) {
-                throw new JsonParseException(msg);
-            } else {
-                throw new JsonSyntaxWithPathException(msg, jsonReader.getPath());
-            }
-        }
-        return taskAdapter;
+    @Nullable
+    private TypeReadWriteAdapter<BaseTypeT> getReadWriteAdapterByTypeName(String typeName) {
+        return mTypeNameToAdapterMap.get(typeName);
     }
 
     @NonNull
     private TypeReadWriteAdapter<BaseTypeT> getReadWriteAdapterByClassName(String className) {
         TypeReadWriteAdapter<BaseTypeT> taskAdapter = mClassToAdapterMap.get(className);
         if (taskAdapter == null) {
+            // should not happen when write
             throw new JsonParseException("unknown subtype = " + className);
         }
         return taskAdapter;
+    }
+
+    private void log(int logLevel, String msg) {
+        Logger logger = mLogger;
+        if (logger != null) {
+            logger.log(logLevel, msg);
+        }
     }
 }
