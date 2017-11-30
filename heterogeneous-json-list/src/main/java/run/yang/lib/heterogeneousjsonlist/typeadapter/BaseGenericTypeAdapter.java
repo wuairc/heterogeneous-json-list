@@ -67,8 +67,7 @@ public abstract class BaseGenericTypeAdapter<BaseTypeT>
         final JsonElement jsonElement = jsonObject.get(mTypeFieldName);
 
         if (jsonElement == null) {
-            log(Logger.ERROR, "type field " + mTypeFieldName + " not found, skip, path: " + in.getPath());
-            return null;
+            throw new JsonSyntaxWithPathException("type field " + mTypeFieldName + " not found", in.getPath());
         } else if (jsonElement.isJsonPrimitive()) {
             // compatible with string, number type
             String typeName = jsonElement.getAsString();
@@ -80,8 +79,7 @@ public abstract class BaseGenericTypeAdapter<BaseTypeT>
             }
             return readWriteAdapter.fromJsonTree(jsonObject, in);
         } else if (jsonElement.isJsonNull()) {
-            log(Logger.ERROR, mTypeFieldName + " is null, skip, path: " + in.getPath());
-            return null;
+            throw new JsonSyntaxWithPathException(mTypeFieldName + " is null", in.getPath());
         } else {
             String msg = mTypeFieldName
                     + " expected to be string or number, but "
