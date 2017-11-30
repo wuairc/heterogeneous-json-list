@@ -34,8 +34,8 @@ public abstract class BaseGenericTypeAdapter<BaseTypeT>
         mLogger = logger;
     }
 
-    protected <ImplTypeT extends BaseTypeT> void addSubTypeAdapter(TypeAdapterFactory factory,
-                                                                   Gson gson, String typeName, Class<ImplTypeT> subTypeClass) {
+    protected <ImplTypeT extends BaseTypeT> void registerSubtypeAdapter(TypeAdapterFactory factory,
+                                                                        Gson gson, String typeName, Class<ImplTypeT> subTypeClass) {
         SubTypeReadWriteAdapter<BaseTypeT, ImplTypeT> readWriteAdapter = new SubTypeReadWriteAdapter<>(
                 gson.getDelegateAdapter(factory, TypeToken.get(subTypeClass)));
         mTypeNameToAdapterMap.put(typeName, readWriteAdapter);

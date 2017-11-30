@@ -31,9 +31,9 @@ public class CardTypeAdapterFactory extends BaseTypeAdapterFactory<Card> {
         public CardTypeAdapter(Gson gson, Logger logger, TypeAdapterFactory factory) {
             super(gson, "card_type", logger);
 
-            addSubTypeAdapter(factory, gson, CardType.GET_LOCATION, GetLocationCard.class);
-            addSubTypeAdapter(factory, gson, CardType.TAKE_PICTURES, TakePicturesCard.class);
-            addSubTypeAdapter(factory, gson, CardType.TEXT_INPUT, TextInputCard.class);
+            registerSubtypeAdapter(factory, gson, CardType.GET_LOCATION, GetLocationCard.class);
+            registerSubtypeAdapter(factory, gson, CardType.TAKE_PICTURES, TakePicturesCard.class);
+            registerSubtypeAdapter(factory, gson, CardType.TEXT_INPUT, TextInputCard.class);
         }
     }
 }
