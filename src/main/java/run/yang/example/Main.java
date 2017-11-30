@@ -1,9 +1,9 @@
-package run.yang;
+package run.yang.example;
 
 import com.google.gson.JsonParseException;
-import run.yang.log.LoggerImpl;
-import run.yang.model.TemplateDocument;
-import run.yang.parser.TemplateParser;
+import run.yang.example.log.LoggerImpl;
+import run.yang.example.model.TemplateDocument;
+import run.yang.example.parser.TemplateParser;
 
 import java.io.IOException;
 import java.io.InputStream;

@@ -1,4 +1,4 @@
-package run.yang.log;
+package run.yang.example.log;
 
 import run.yang.lib.heterogeneousjsonlist.log.Logger;
 

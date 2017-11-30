@@ -1,4 +1,4 @@
-package run.yang.model.card;
+package run.yang.example.model.card;
 
 import com.google.gson.annotations.SerializedName;
 

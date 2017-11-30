@@ -1,7 +1,7 @@
-package run.yang.model;
+package run.yang.example.model;
 
 import com.google.gson.annotations.SerializedName;
-import run.yang.model.card.Card;
+import run.yang.example.model.card.Card;
 
 import java.util.List;
 

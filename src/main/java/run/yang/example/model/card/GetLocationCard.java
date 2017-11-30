@@ -1,4 +1,4 @@
-package run.yang.model.card;
+package run.yang.example.model.card;
 
 /**
  * 创建时间: 2017/08/30 18:24 <br>

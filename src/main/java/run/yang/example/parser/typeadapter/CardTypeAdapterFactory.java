@@ -1,4 +1,4 @@
-package run.yang.parser.typeadapter;
+package run.yang.example.parser.typeadapter;
 
 import android.support.annotation.Nullable;
 import com.google.gson.Gson;
@@ -7,7 +7,7 @@ import com.google.gson.TypeAdapterFactory;
 import run.yang.lib.heterogeneousjsonlist.log.Logger;
 import run.yang.lib.heterogeneousjsonlist.typeadapter.BaseGenericTypeAdapter;
 import run.yang.lib.heterogeneousjsonlist.typeadapter.BaseTypeAdapterFactory;
-import run.yang.model.card.*;
+import run.yang.example.model.card.*;
 
 
 /**

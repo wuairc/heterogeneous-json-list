@@ -7,7 +7,4 @@ Deserialize heterogeneous list from json with Gson.
 
 # Usage
 
-(TBD)
-
-
-see `/src/main/java/run/yang/Main.java` for an example.
+(TBD) see `/src/main/java/run/yang/example/Main.java` for an example.
