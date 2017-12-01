@@ -1,4 +1,5 @@
-rootProject.name = 'example'
+rootProject.name = 'app'
 
 include 'heterogeneous-json-list'
+include 'example'
 

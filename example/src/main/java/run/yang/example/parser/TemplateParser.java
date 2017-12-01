@@ -4,9 +4,9 @@ import android.support.annotation.Nullable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParseException;
-import run.yang.lib.heterogeneousjsonlist.log.Logger;
 import run.yang.example.model.TemplateDocument;
 import run.yang.example.parser.typeadapter.CardTypeAdapterFactory;
+import run.yang.lib.heterogeneousjsonlist.log.Logger;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

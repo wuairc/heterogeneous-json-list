@@ -10,7 +10,7 @@ import java.util.ListIterator;
 /**
  * 创建时间: 2017/09/01 16:33 <br>
  * 作者: Yang Tianmei <br>
- * 描述: 包含 Json Path 的 {@link JsonSyntaxException}，方便定位语法错误发生在 json 字符串的哪个位置 <br />
+ * 描述: 包含 Json Path 的 {@link JsonSyntaxException}，方便定位语法错误发生在 json 字符串的哪个位置
  * <p>
  * 输出示例：<code>run.yang.lib.heterogeneousjsonlist.JsonSyntaxWithPathException: action_type
  * expected to be a string, but JsonObject found, context: $.tasks[1]$.ui.pages[2]$.levels[1].cards[2]$.top_right_button.action
