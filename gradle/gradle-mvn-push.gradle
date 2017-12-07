@@ -37,11 +37,16 @@ afterEvaluate { project ->
                 pom.artifactId = POM_ARTIFACT_ID
                 pom.version = VERSION_NAME
 
+                def proxyConfig = resolveProxySettings(project)
+
                 repository(url: getReleaseRepositoryUrl()) {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                    proxy(proxyConfig)
                 }
+
                 snapshotRepository(url: getSnapshotRepositoryUrl()) {
                     authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
+                    proxy(proxyConfig)
                 }
 
                 pom.project {
@@ -126,4 +131,39 @@ afterEvaluate { project ->
             }
         }
     }
+}
+
+/**
+ * 读取 gradle.properties 中的代理设置，支持 http, https。如 systemProp.http.proxyHost=127.0.0.1 等
+ *
+ * 如果公司的网络有负载均衡，上传到 Sonatype OSS 时很可能出现一次上传的文件被分散到了多个 staging repository，
+ * 这是有因为上传过程中出口 IP 地址变了。 这种情况下设置一个外部代理可以解决这个问题。
+ * 详见： https://issues.sonatype.org/browse/OSSRH-19485
+ * @param project
+ * @return 适用于 mavenDeployer.repository.proxy() 函数的参数
+ */
+static Map<String, ?> resolveProxySettings(Project project) {
+    final Map<String, ?> properties = project.properties
+
+    for (String proxyType in ["http", "https"]) {
+        Set<String> requiredKeys = ["proxyHost", "proxyPort"].collect { "systemProp.${proxyType}.${it}".toString() }
+
+        if (properties.keySet().containsAll(requiredKeys)) {
+            final Map<String, ?> proxyConfig = new HashMap<>()
+
+            String key = "systemProp.${proxyType}.proxyHost".toString()
+            proxyConfig.put("host", properties.get(key) as String)
+
+            key = "systemProp.${proxyType}.proxyPort".toString()
+            proxyConfig.put("port", properties.get(key) as int)
+
+            key = "systemProp.${proxyType}.nonProxyHosts".toString()
+            if (properties.containsKey(key)) {
+                proxyConfig.put("nonProxyHosts", properties.get(key))
+            }
+
+            return proxyConfig
+        }
+    }
+    return Collections.emptyMap()
 }
